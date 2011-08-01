@@ -1,0 +1,41 @@
+{% extends "../base.html" %}
+{% block content %}
+
+<h2>Timeline</h2>
+
+<form action="/message/create" method="post">
+  <input type="hidden" name="name" value="{{ name }}">
+  <textarea name="text" value="" rows="4" cols="40"></textarea><br/>
+  <input type="submit" name="submit" value="Send"/>&nbsp;
+  {% include "../flash.html" %}
+</form><br />
+
+{% if user %}
+  {% if is_following %}
+    <a href="/user/unfollow/{{ user.name }}/{{ user.id }}">
+      {{ user.name }}のフォローを外す
+    </a>
+  {% else %}
+    <a href="/user/follow/{{ user.name }}/{{ user.id }}">
+      {{ user.name }}をフォローする
+    </a>
+  {% endif %}
+{% endif %}
+
+<br /><br />
+
+{% for m in timeline %}
+  <div style="border:1px solid #ccc; margin-top:-1px;padding:3px;">
+
+    <a href="/user/timeline/{{ m.user_name }}">
+      <img src="/user/icon/{{ m.user_name }}"
+           alt="{{ m.user_name }}" width=40 heigth=40 />
+    </a>
+    
+    {{ m.text }}<br />
+    <a href="/user/timeline/{{ m.user_name }}"><b>{{ m.user_name }}</b></a>
+    
+  </div>
+{% endfor %}
+
+{% endblock %}

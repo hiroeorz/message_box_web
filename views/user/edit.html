@@ -1,0 +1,22 @@
+{% extends "../base.html" %}
+{% block content %}
+
+<p>{% include "../flash.html" %}</p>
+
+<h2>Edit User</h2>
+
+<form action="/user/update" method="post" enctype="multipart/form-data">
+  <p>Password</p>
+  <input type="password", name="password" />
+
+  <p>E-Mail</p>
+  <input type="text", name="mail" value="{{ user.mail }}" />
+
+  <p>Icon File</p>
+  <input type="file", name="icon_file" />
+
+  <br /><br />
+  <input type="submit" value="Save">
+</form>
+
+{% endblock %}

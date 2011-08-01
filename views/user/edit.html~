@@ -1,0 +1,25 @@
+{% extends "../base.html" %}
+{% block content %}
+
+<p>{% include "../flash.html" %}</p>
+
+<h2>Create New User</h2>
+
+<form action="/user/create" method="post" enctype="multipart/form-data">
+  <p>User Name</p>
+  <input type="text", name="name" />
+
+  <p>Password</p>
+  <input type="password", name="password" />
+
+  <p>E-Mail</p>
+  <input type="text", name="mail" />
+
+  <p>Icon File</p>
+  <input type="file", name="icon_file" />
+
+  <br /><br />
+  <input type="submit" value="Create New User">
+</form>
+
+{% endblock %}

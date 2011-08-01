@@ -1,0 +1,22 @@
+{% extends "../base.html" %}
+{% block content %}
+
+<h2>Timeline</h2>
+
+<form action="/home/create" method="post">
+  <input type="hidden" name="name" value="{{ name }}">
+  <textarea name="text" value="" rows="4" cols="40"></textarea><br/>
+  <input type="submit" name="submit" value="Save"/>&nbsp;
+  {% include "../flash.html" %}
+</form><br />
+
+{% for m in timeline %}
+  <div style="border:1px solid #ccc; margin-top:-1px;padding:3px;">
+    <img src="/user/icon/{{ name }}" alt="{{ name }}" width=40 heigth=40 />
+    {{ m.text }}<br />
+    <b>{{ m.user_name }}</b>
+    
+  </div>
+{% endfor %}
+
+{% endblock %}

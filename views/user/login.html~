@@ -1,0 +1,12 @@
+{% extends "../base.html" %}
+{% block content %}
+
+<form action="/user/exec_auth">
+  <p>User Name</p>
+  <input type="text", name="name" />
+
+  <p>Password</p>
+  <input type="password", name="password" />
+</form>
+
+{% endblock %}

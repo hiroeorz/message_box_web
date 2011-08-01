@@ -1,0 +1,20 @@
+{% extends "../base.html" %}
+{% block content %}
+
+<p>{% include "../flash.html" %}</p>
+
+<form action="/user/auth">
+  <p>User Name</p>
+  <input type="text", name="name" />
+
+  <p>Password</p>
+  <input type="password", name="password" />
+
+  <p>E-Mail</p>
+  <input type="text", name="mail" />
+
+  <br /><br />
+  <input type="submit" value="Authenticate!">
+</form>
+
+{% endblock %}
