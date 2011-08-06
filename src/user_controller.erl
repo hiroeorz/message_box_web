@@ -24,7 +24,7 @@ handle_request("timeline",[Name]) ->
 
     case message_box_rpc:call(get_user, [Name]) of
         {ok, User} ->
-            TimelineRecords = message_box_rpc:call(get_home_timeline, 
+            TimelineRecords = message_box_rpc:call(get_sent_timeline, 
                                                    [Name, ?MsgGetCount]),
             Timeline = message_box_web:parse_timeline(TimelineRecords),
             [{id, UserId} | _] = User,

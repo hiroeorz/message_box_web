@@ -45,6 +45,10 @@ loop(Req) ->
 	    Req:respond({Status,
 			 [{"Content-Type",ContentType}|[get_cookie(Env)|Headers]],
 			 Content});
+	{json,Content} when is_list(Content) ->
+	    Req:respond({200,
+			 [{"Content-Type","text/html"}|[get_cookie(Env)]],
+			 Content});
 	{text,Content} ->
 	    Req:respond({200,
 			 [{"Content-Type","text/plain"}|[get_cookie(Env)]],

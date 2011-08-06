@@ -13,16 +13,22 @@ handle_request("index",[]) ->
     TimelineRecords = message_box_rpc:call(get_home_timeline, 
 					   [Name, ?MsgGetCount]),
     Timeline = message_box_web:parse_timeline(TimelineRecords),
-    {render,"home/show.html",[{name,Name}, {timeline, Timeline}, 
+    {render,"home/show.html",[{controller,"home"},
+                              {name,Name}, {timeline, Timeline}, 
                               {user, false},
-                              {is_following, false}]}.
+                              {is_following, false}]};
 
-%%
-%% @doc private functions
-%%
+handle_request("json",[]) ->
+    Name = beepbeep_args:get_session_data("name", Env),
+    TimelineRecords = message_box_rpc:call(get_home_timeline, 
+					   [Name, ?MsgGetCount]),
+
+    JsonData = message_box_json:encode_timeline(TimelineRecords),
+    {json, JsonData}.
+
 
 before_filter() ->
-    FilterOnly = ["index"],
+    FilterOnly = ["index", "json"],
     case lists:member(beepbeep_args:get_action(Env),FilterOnly) of
 	true ->
 	    message_box_web:check_logged_in(Env);

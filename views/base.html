@@ -10,6 +10,7 @@
     <h1>MessageBox</h1>
 
     <div style="text-align:right">
+      <a href="">
       <a href="/user/edit">User Settings</a>
       <a href="/user/logout">Logout</a>
     </div>
@@ -19,6 +20,12 @@
     <a href="/home">Home</a>
     <a href="/mentions">Mentions</a>
     <a href="/sent">Sent</a>
+
+    <div style="text-align:right; margin-top:-16px;">
+      {% if controller %}
+        <a href="/{{ controller }}/json">Json</a>
+      {% endif %}
+    </div>
 
     {% block content %}{% endblock %}
 
