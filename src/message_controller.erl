@@ -15,10 +15,36 @@ handle_request("create", []) ->
     Result = message_box_rpc:call(send_message, [Name, OTPassword, Text]),
 
     case Result of
-	{ok, _MessageId} -> beepbeep_args:flash({notice,"Message Saved."}, Env);
-	Other -> io:format("error: ~p~n", [Other])
+	{ok, _MessageId} -> 
+            beepbeep_args:flash({notice,"Message Saved."}, Env);
+	{error, Reason} -> 
+            io:format("error: ~p~n", [Reason]),
+            beepbeep_args:flash({notice,"Error:" ++ atom_to_list(Reason)}, Env)
     end,
-    {redirect, "/home"}.
+    {redirect, "/home"};
+
+%%
+%% @doc send message and retrun result as json.
+%%
+%% @spec handle_request("create_json", []) -> 
+%%         {"message_id", string()} | {error, unauthenticated}
+%%
+handle_request("create_json", []) ->
+    Name = beepbeep_args:get_param("name",Env),
+    Text = beepbeep_args:get_param("text",Env),
+    ?debugVal(Text),
+
+    OTPassword = message_box_web:get_one_time_password(Env),
+    Result = message_box_rpc:call(send_message, [Name, OTPassword, Text]),
+
+    case Result of
+	{ok, MessageId} -> 
+            {json, message_box_json:encode_result({message_id, MessageId})};
+	{error, Reason} -> 
+            io:format("error: ~p~n", [Reason]),
+            ReasonBin = list_to_binary(atom_to_list(Reason)),
+            {json, message_box_json:encode_result({error, ReasonBin})}
+    end.
 
 %%
 %% @doc private functions

@@ -104,38 +104,27 @@ handle_request("auth", []) ->
 	    {redirect, "/user/login"}
     end;
 
-handle_request("follow",[Name, UserIdStr]) ->
-    User = beepbeep_args:get_session_data("user", Env),
-    OTPassword = message_box_web:get_one_time_password(Env),
-    UserId = list_to_integer(UserIdStr),
+handle_request("auth_json", []) ->
+    Name = beepbeep_args:get_param("name", Env),
+    Password = beepbeep_args:get_param("password", Env),
 
-    case message_box_rpc:call(follow, [User#user.id, OTPassword, UserId]) of
-        ok ->
-            {redirect, "/user/timeline/" ++ Name};
-        {error, already_following} ->
-            beepbeep_args:flash({notice, "You are already following."}),
-            {redirect, "/user/timeline/" ++ Name};
-        Result ->
-            ?debugVal(Result),
-            {error, 500, "error"}
+    case message_box_rpc:call(authenticate, [Name, Password]) of
+	{ok, OneTimePassword, User} ->
+	    ok = beepbeep_args:set_session_data("name", Name, Env),
+	    ok = beepbeep_args:set_session_data("user", User, Env),
+	    ok = beepbeep_args:set_session_data("one_time_password", 
+						OneTimePassword, Env),
+	    error_logger:info_report("User:~p is logged in~n", [Name]),
+	    message_box_web:sleep(?WAIT_TIME_AFTER_LOGIN),
+?debugVal(Name),
+            Json = message_box_json:encode_auth_result(ok, User, 
+                                                       OneTimePassword),
+	    {json, Json};
+	{Result, Reason} ->
+            Json = message_box_json:encode_result({Result, Reason}),
+	    {json, Json}
     end;
 
-handle_request("unfollow",[Name, UserIdStr]) ->
-    User = beepbeep_args:get_session_data("user", Env),
-    OTPassword = message_box_web:get_one_time_password(Env),
-    UserId = list_to_integer(UserIdStr),
-
-    case message_box_rpc:call(unfollow, [User#user.id, OTPassword, UserId]) of
-        {ok, deleted} ->
-            {redirect, "/user/timeline/" ++ Name};
-        {error,not_following} ->
-            beepbeep_args:flash({notice, "You are not following."}),
-            {redirect, "/user/timeline/" ++ Name};
-        Result ->
-            ?debugVal(Result),
-            {error, 500, "error"}
-    end;
-            
 handle_request("icon", [Name]) ->
     {ok, Data, ContentType} = message_box_rpc:call(get_icon, [Name]),
     {send_data, ContentType, "inline", Data}.
@@ -145,7 +134,7 @@ handle_request("icon", [Name]) ->
 %%
 
 before_filter() ->
-    FilterOnly = ["edit", "update", "follow", "timeline"],
+    FilterOnly = ["edit", "update", "timeline"],
     case lists:member(beepbeep_args:get_action(Env),FilterOnly) of
 	true ->
 	    message_box_web:check_logged_in(Env);

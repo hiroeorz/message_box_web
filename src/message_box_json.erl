@@ -8,7 +8,22 @@
 -include("../deps/message_box/src/message.hrl").
 -include("../deps/message_box/src/user.hrl").
 
--export([encode_timeline/1]).
+-export([encode_result/1, encode_timeline/1, encode_auth_result/3]).
+
+%%
+%% @doc create json stirng for follow result.
+%%
+-spec(encode_result(tuple()) -> string() ).
+
+encode_result({Key, Value}) when is_integer(Value) ->
+    Encoder = mochijson2:encoder([{utf8, true}]),
+    Encoder({struct, [{atom_to_list(Key), 
+                       list_to_binary(integer_to_list(Value))}]});
+
+encode_result({Key, Value}) when is_atom(Value) ->
+    Encoder = mochijson2:encoder([{utf8, true}]),
+    Encoder({struct, [{atom_to_list(Key), 
+                       list_to_binary(atom_to_list(Value)) }] }).
 
 %%
 %% @doc create record for parsing mochijson2 from timeline list.
@@ -39,6 +54,28 @@ encode_timeline(TimelineList, List4Json) ->
                   {"user", UserStruct}]},
 
     encode_timeline(Tail, [Record4Json | List4Json]).
+
+%%
+%% @doc create user data as json.
+%%
+-spec(encode_auth_result(atom(), #user{}, string()) -> string() ).
+
+encode_auth_result(Result, User, OneTimePassword) ->
+    Pass = binary_to_list(OneTimePassword),
+    io:format("~s~n", [Pass]),
+
+    Record = {struct, [{"result", atom_to_binary(Result)},
+                       {"user", create_user_struct(User)}]},
+    Encoder = mochijson2:encoder([{utf8, true}]),
+    Encoder(Record).
+
+%%
+%% @doc change type atom -> binary.
+%%
+-spec(atom_to_binary(atom()) -> binary() ).
+
+atom_to_binary(Atom) when is_atom(Atom) ->
+    list_to_binary(atom_to_list(Atom)).
 
 %%
 %% @doc create record for parsing mochijson2 from timeline list.

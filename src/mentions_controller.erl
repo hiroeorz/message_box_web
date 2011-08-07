@@ -18,6 +18,11 @@ handle_request("index",[]) ->
                               {user, false},
                               {is_following, false}]};
 
+%%
+%% @doc unfollow user and retrun result as json.
+%%
+%% @spec GET /mentions/json -> list() | {"error", "not_found"}
+%%
 handle_request("json",[]) ->
     Name = beepbeep_args:get_session_data("name", Env),
     TimelineRecords = message_box_rpc:call(get_mentions_timeline, 
