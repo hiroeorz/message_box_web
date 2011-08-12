@@ -2,3 +2,5 @@
 *.beam
 erl_crashdump.dump
 erl_crash.dump
+
+deps/mochiweb

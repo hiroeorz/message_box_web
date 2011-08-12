@@ -11,8 +11,9 @@
 handle_request("create", []) ->
     Name = beepbeep_args:get_param("name",Env),
     Text = beepbeep_args:get_param("text",Env),
+    TextBin = list_to_binary(Text),
     OTPassword = message_box_web:get_one_time_password(Env),
-    Result = message_box_rpc:call(send_message, [Name, OTPassword, Text]),
+    Result = message_box_rpc:call(send_message, [Name, OTPassword, TextBin]),
 
     case Result of
 	{ok, _MessageId} -> 
@@ -32,10 +33,10 @@ handle_request("create", []) ->
 handle_request("create_json", []) ->
     Name = beepbeep_args:get_param("name",Env),
     Text = beepbeep_args:get_param("text",Env),
-    ?debugVal(Text),
+    TextBin = list_to_binary(Text),
 
     OTPassword = message_box_web:get_one_time_password(Env),
-    Result = message_box_rpc:call(send_message, [Name, OTPassword, Text]),
+    Result = message_box_rpc:call(send_message, [Name, OTPassword, TextBin]),
 
     case Result of
 	{ok, MessageId} -> 

@@ -47,6 +47,8 @@ get_one_time_password(Env) ->
 %%
 %% @doc timeline parser
 %%
+-spec(parse_timeline(list(#message{})) ->  list(list(tuple()))).
+
 parse_timeline(RecordList) ->
     parse_timeline(RecordList, []).
 
@@ -55,7 +57,8 @@ parse_timeline(RecordList, Results) ->
 	[] -> lists:reverse(Results);
 	[Message | Tail] ->
             User = Message#message.user,
-	    Msg = [{id, Message#message.id}, {text, Message#message.text},
+	    Msg = [{id, Message#message.id}, 
+                   {text, Message#message.text},
                    {user_name, atom_to_list(User#user.name)}, 
                    {user_id, User#user.id}],
 	    parse_timeline(Tail, [Msg | Results])
